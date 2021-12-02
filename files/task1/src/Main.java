@@ -12,7 +12,7 @@ public class Main {
         file = new File("Games\\res");
         if (file.mkdir())
             logSB.append(LocalDateTime.now()).append(" - Папка ").append(file.getName()).append(" создана\n");
-        file = new File("Games\\savedgames");
+        file = new File("Games\\savegames");
         if (file.mkdir())
             logSB.append(LocalDateTime.now()).append(" - Папка ").append(file.getName()).append(" создана\n");
         file = new File("Games\\temp");
