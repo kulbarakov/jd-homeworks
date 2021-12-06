@@ -10,9 +10,9 @@ public class Main {
         GameProgress gp2 = new GameProgress(75, 2, 7, 100);
         GameProgress gp3 = new GameProgress(30, 3, 3, 150);
 
-        String fileGP1 = "Games\\savegames\\gp1.dat";
-        String fileGP2 = "Games\\savegames\\gp2.dat";
-        String fileGP3 = "Games\\savegames\\gp3.dat";
+        String fileGP1 = "gp1.dat";
+        String fileGP2 = "gp2.dat";
+        String fileGP3 = "gp3.dat";
 
 
         List<String> fileList = List.of(fileGP1, fileGP2, fileGP3);
