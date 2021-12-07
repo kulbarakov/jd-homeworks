@@ -37,15 +37,18 @@ public class Main {
     static void zipFiles(String zipFile, List<String> files) {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
             for (String file : files) {
-                FileInputStream fis = new FileInputStream(file);
-                ZipEntry entry = new ZipEntry(file);
-                zos.putNextEntry(entry);// считываем содержимое файла в массив
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);// добавляем содержимое к архиву
-                zos.write(buffer);// закрываем текущую запись для новой записи
-                zos.closeEntry();
-                fis.close();
-                new File(file).delete();
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry entry = new ZipEntry(file);
+                    zos.putNextEntry(entry);// считываем содержимое файла в массив
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);// добавляем содержимое к архиву
+                    zos.write(buffer);// закрываем текущую запись для новой записи
+                    zos.closeEntry();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                } finally {
+                    new File(file).delete();
+                }
             }
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

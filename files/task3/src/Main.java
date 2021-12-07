@@ -39,15 +39,18 @@ public class Main {
     static void zipFiles(String zipFile, List<String> files) {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
             for (String file : files) {
-                FileInputStream fis = new FileInputStream(file);
-                ZipEntry entry = new ZipEntry(file);
-                zos.putNextEntry(entry);// считываем содержимое файла в массив
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);// добавляем содержимое к архиву
-                zos.write(buffer);// закрываем текущую запись для новой записи
-                zos.closeEntry();
-                fis.close();
-                new File(file).delete();
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry entry = new ZipEntry(file);
+                    zos.putNextEntry(entry);// считываем содержимое файла в массив
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);// добавляем содержимое к архиву
+                    zos.write(buffer);// закрываем текущую запись для новой записи
+                    zos.closeEntry();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                } finally {
+                    new File(file).delete();
+                }
             }
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -60,14 +63,15 @@ public class Main {
             String fileName;
             while ((entry = zis.getNextEntry()) != null) {
                 fileName = entry.getName();
-                FileOutputStream fos = new FileOutputStream(destPath + "\\" + fileName);
-                for (int c = zis.read(); c != -1; c = zis.read()) {
-                    fos.write(c);
+                try (FileOutputStream fos = new FileOutputStream(destPath + "\\" + fileName)) {
+                    for (int c = zis.read(); c != -1; c = zis.read()) {
+                        fos.write(c);
+                    }
+                    fos.flush();
+                    zis.closeEntry();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 }
-                fos.flush();
-                zis.closeEntry();
-                ;
-                fos.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,10 +81,10 @@ public class Main {
     static GameProgress openProgress(String pathToDat) {
         GameProgress gameProgress = null;
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathToDat))) {
-            gameProgress = (GameProgress) ois.readObject();            
+            gameProgress = (GameProgress) ois.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-        return gameProgress;        
+        return gameProgress;
     }
 }
