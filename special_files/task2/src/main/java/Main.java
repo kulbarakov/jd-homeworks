@@ -31,7 +31,6 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonObject);
 
         List<Employee> XmlList = parseXML("data.xml");
         jsonObject = listToJson(XmlList);
@@ -41,7 +40,6 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonObject);
     }
 
     private static List<Employee> parseXML(String s) {
@@ -61,12 +59,26 @@ public class Main {
                     String lastName = element.getElementsByTagName("lastName").item(0).getTextContent();
                     String country = element.getElementsByTagName("country").item(0).getTextContent();
                     int age = Integer.parseInt(element.getElementsByTagName("age").item(0).getTextContent());
-                    Employee employee = new Employee(id,firstName,lastName,country,age);
+                    Employee employee = new Employee(id, firstName, lastName, country, age);
                     result.add(employee);
                 }
             }
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
+        }
+        return result;
+    }
+
+    private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
+        List<Employee> result = new ArrayList<>();
+        try (CSVReader reader = new CSVReader(new FileReader(fileName))) {
+            ColumnPositionMappingStrategy<Employee> strategy = new ColumnPositionMappingStrategy<>();
+            strategy.setType(Employee.class);
+            strategy.setColumnMapping(columnMapping);
+            CsvToBean<Employee> csv = new CsvToBeanBuilder<Employee>(reader).withMappingStrategy(strategy).build();
+            result = csv.parse();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         return result;
     }
@@ -77,21 +89,5 @@ public class Main {
         Type listType = new TypeToken<List<T>>() {
         }.getType();
         return gson.toJson(list, listType);
-    }
-
-    private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
-        List<Employee> result = new ArrayList<>();
-        try (CSVReader reader = new CSVReader(new FileReader(fileName))) {
-            ColumnPositionMappingStrategy<Employee> strategy = new ColumnPositionMappingStrategy<>();
-            strategy.setType(Employee.class);
-            strategy.setColumnMapping(columnMapping);
-            CsvToBean<Employee> csv = new CsvToBeanBuilder<Employee>(reader)
-                    .withMappingStrategy(strategy)
-                    .build();
-            result = csv.parse();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return result;
     }
 }
