@@ -25,9 +25,23 @@ public class Main {
         String fileName = "data.csv";
         List<Employee> list = parseCSV(columnMapping, fileName);
         String jsonObject = listToJson(list);
+        try (FileWriter file = new FileWriter("data.json")) {
+            file.write(jsonObject);
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(jsonObject);
 
         List<Employee> XmlList = parseXML("data.xml");
+        jsonObject = listToJson(XmlList);
+        try (FileWriter file = new FileWriter("data2.json")) {
+            file.write(jsonObject);
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(jsonObject);
     }
 
     private static List<Employee> parseXML(String s) {
@@ -37,30 +51,22 @@ public class Main {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new File(s));
             Node root = doc.getDocumentElement();
-            result = read(root);
-//            System.out.println("Корневой элемент: " + root.getNodeName());
+            NodeList nodeList = root.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node_ = nodeList.item(i);
+                if (Node.ELEMENT_NODE == node_.getNodeType()) {
+                    Element element = (Element) node_;
+                    long id = Long.parseLong(element.getElementsByTagName("id").item(0).getTextContent());
+                    String firstName = element.getElementsByTagName("firstName").item(0).getTextContent();
+                    String lastName = element.getElementsByTagName("lastName").item(0).getTextContent();
+                    String country = element.getElementsByTagName("country").item(0).getTextContent();
+                    int age = Integer.parseInt(element.getElementsByTagName("age").item(0).getTextContent());
+                    Employee employee = new Employee(id,firstName,lastName,country,age);
+                    result.add(employee);
+                }
+            }
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
-        }
-        return result;
-    }
-
-    private static List<Employee> read(Node node) {
-        NodeList nodeList = node.getChildNodes();
-        List<Employee> result = new ArrayList<>();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node_ = nodeList.item(i);
-            if (Node.ELEMENT_NODE == node_.getNodeType()) {
-                Element element = (Element) node_;
-                NamedNodeMap map = element.getAttributes();
-                Employee employee = new Employee();
-                result.add(employee);
-//                for (int a = 0; a < map.getLength(); a++) {
-//                    String attrName = map.item(a).getNodeName();
-//                    String attrValue = map.item(a).getNodeValue();
-//                }
-                read(node_);
-            }
         }
         return result;
     }
@@ -70,14 +76,7 @@ public class Main {
         Gson gson = builder.create();
         Type listType = new TypeToken<List<T>>() {
         }.getType();
-        String jsonString = gson.toJson(list, listType);
-        try (FileWriter file = new FileWriter("data.json")) {
-            file.write(jsonString);
-            file.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return jsonString;
+        return gson.toJson(list, listType);
     }
 
     private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
