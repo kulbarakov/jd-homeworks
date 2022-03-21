@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FibServer {
+public class NioFibServer {
     static Map<Integer, BigInteger> fibs = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
