@@ -4,7 +4,7 @@ import java.util.concurrent.*;
 public class Main {
     static Map<Integer, Integer> concurrentHashMap = new ConcurrentHashMap<>();
     static Map<Integer,Integer> synchronizedMap = Collections.synchronizedMap(new HashMap<>());
-    static final int ARRAY_SIZE = 1000;
+    static final int ARRAY_SIZE = 10000000;
 
     public static void main(String[] args) throws InterruptedException {
 

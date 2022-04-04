@@ -24,8 +24,13 @@ public class CallCenter {
                     while (!Thread.interrupted()) {
                         if (queue.isEmpty()) {
                             System.out.println(Thread.currentThread().getName() + " скучает без работы.");
-                        } else
-                            System.out.println(Thread.currentThread().getName() + " принял звонок #" + queue.poll());
+                        } else {
+                            Long call = queue.poll();
+                            if (call != null)
+                                System.out.println(Thread.currentThread().getName() + " принял звонок #" + call);
+                            else
+                                System.out.println(Thread.currentThread().getName() + " звонков больше нет!");
+                        }
                         try {
                             Thread.sleep(OPERATORS_TIMEOUT);
                         } catch (InterruptedException e) {
