@@ -1,13 +1,13 @@
 public class CreditCalculator {
     public double calcMonthlyPayment(double paymentSum, int monthCount) {
-        return 0;
+        return paymentSum / monthCount;
     }
 
     public double calcPaymentSum(int creditSum, int monthCount, double annualRate) {
-        return 0;
+        return creditSum + (creditSum * ((annualRate / 12) * monthCount));
     }
 
     public double calcOverpayment(double paymentSum, int creditSum) {
-        return 0;
+        return paymentSum - creditSum;
     }
 }
